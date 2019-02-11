@@ -313,17 +313,79 @@ def skbay(aaa1,train_x):
             accuracy=classification_report(y_test, y_pred)
             
             return accuracy
-                                
+def preprocess(text):
+            text = re.sub(r'[^\w\s]','',text)
+            tokens = text.lower()
+            tokens = tokens.split()
             
+            return tokens
+                                        
+            
+def bagofwords(sentence, words):
+    
+            sentence_words = preprocess(sentence)
+            #print("X",sentence_words)
+            #print(sentence_words)
+            # frequency word count
+            bag = np.zeros(len(words))
+            for sw in sentence_words:
+                for i,word in enumerate(words):
+                    if word == sw:
+                        #print(sw)
+                        #print(i)
+                        bag[i] =bag[i]+ 1
+                        
+                        #print(bag[i])
+                        
+            return np.array(bag)
+
 
 
 ##########################################################
 
 
 
+if sys.argv[1]== dolphins:
+   data_x=np.genfromtxt('../data/dolphins/dolphins.csv',delimiter=' ')
+   train_x=np.genfromtxt('../data/dolphins/dolphins_label.csv',delimiter=' ')
+elif sys.argv[1]==pubmed:
+   data_x=np.genfromtxt('../data/pubmed/pubmed.csv',delimiter=' ')
+   train_x=np.genfromtxt('../data/pubmed/pubmed_label.csv',delimiter=' ')
+else:
+        filepath = '../data/twitter/twitter.txt'
 
-data_x=np.genfromtxt('../data/dolphins/dolphins.csv',delimiter=' ')
-train_x=np.genfromtxt('../data/dolphins/dolphins_label.csv',delimiter=' ')
+        with open(filepath, 'r') as fp:
+            line1 = [line.strip() for line in fp]
+            fp.close()
+        #print(line1)
+
+
+        with open(filepath) as fp:  
+           line = fp.readline()
+           #line1=[]
+           cnt = 0
+           word=[]
+           while line:
+                   y=line.strip();
+                   #line1.append(y)
+
+                   x=preprocess(y)
+                   word.extend(x)
+                   line = fp.readline()
+                   cnt += 1
+                
+           word=sorted(list(set(word)))
+           i=0;
+           
+           bags=[]
+           
+           while i<len(line1):
+               x=bagofwords(line1[i],word)
+               x.tolist()
+               bags.append(x)
+               i=i+1;
+           newbag=np.array(bags)
+    
 #print(data_x)
 
 
